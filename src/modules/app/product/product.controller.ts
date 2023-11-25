@@ -10,7 +10,10 @@ import {
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
+// @ApiBearerAuth()
+@ApiTags('product')
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
@@ -20,6 +23,7 @@ export class ProductController {
     return this.productService.create(createProductDto);
   }
 
+  @ApiOperation({ summary: 'Find all products' })
   @Get()
   async findAll() {
     const products = await this.productService.findAll();
@@ -27,6 +31,7 @@ export class ProductController {
     return products.data;
   }
 
+  @ApiOperation({ summary: 'Find one product' })
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const product = await this.productService.findOne(id);
