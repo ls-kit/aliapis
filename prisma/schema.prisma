@@ -1,0 +1,509 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// User table
+model User {
+  id         Int       @id @default(autoincrement())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  deleted_at DateTime?
+  status     Int?      @default(1)
+
+  last_logged_in DateTime?
+
+  email    String? @unique
+  username String? @unique
+  fname    String? @db.VarChar(255)
+  lname    String? @db.VarChar(255)
+  password String? @db.VarChar(255)
+  avatar   String?
+
+  // billing id. e.g. stripe customer id
+  billing_id String?
+
+  is_admin Int? @default(0) // 0 = false, 1 = true
+
+  ucodes          Ucode[]
+  role_users      RoleUser[]
+  Address         Address[]
+  Cart            Cart[]
+  Contact         Contact[]
+  Coupon          Coupon[]
+  CouponUser      CouponUser[]
+  Order           Order[]
+  CustomerCart    CustomerCart[]
+  EmailSubscriber EmailSubscriber[]
+  Invoice         Invoice[]
+  InvoiceItem     InvoiceItem[]
+  Ledger          Ledger[]
+  Menu            Menu[]
+  MenuGroup       MenuGroup[]
+  Notification    Notification[]
+  OrderItem       OrderItem[]
+
+  @@map("users")
+}
+
+model Ucode {
+  id         Int      @id @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+  status     Int?     @default(1)
+
+  user_id Int?
+  user    User? @relation(fields: [user_id], references: [id])
+
+  token      String    @db.Text
+  email      String
+  expired_at DateTime?
+
+  @@map("ucodes")
+}
+
+// Store list of Roles
+model Role {
+  id         Int       @id @default(autoincrement())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  deleted_at DateTime?
+  status     Int?      @default(1)
+
+  title String?
+  name  String?
+
+  permission_roles PermissionRole[]
+  role_users       RoleUser[]
+  permissions      Permission[]
+
+  @@map("roles")
+}
+
+// Store List of permissions
+model Permission {
+  id         Int       @id @default(autoincrement())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  deleted_at DateTime?
+  status     Int?      @default(1)
+
+  title            String?
+  action           String?
+  subject          String?
+  conditions       String?          @db.Text
+  fields           String?          @db.Text
+  permission_roles PermissionRole[]
+  roles            Role[]
+
+  @@map("permissions")
+}
+
+// permission and role relationship
+model PermissionRole {
+  // id         Int      @id @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  permission_id Int
+  permission    Permission? @relation(fields: [permission_id], references: [id], onDelete: Cascade)
+
+  role_id Int
+  role    Role? @relation(fields: [role_id], references: [id], onDelete: Cascade)
+
+  @@id([permission_id, role_id])
+  @@map("permission_roles")
+}
+
+// role and user relationship
+model RoleUser {
+  // id         Int      @id @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  role_id Int
+  role    Role? @relation(fields: [role_id], references: [id], onDelete: Cascade)
+
+  user_id Int
+  user    User? @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@id([role_id, user_id])
+  @@map("role_users")
+}
+
+// just for example
+// model Note {
+//   id         Int       @id @default(autoincrement())
+//   created_at DateTime  @default(now())
+//   updated_at DateTime  @default(now())
+//   deleted_at DateTime?
+//   status     Int?      @default(1)
+
+//   title String?
+//   body  String? @db.Text
+
+//   tenant_id Int?
+//   tenant    Organization? @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+
+//   user_id Int?
+//   user    User? @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+//   @@map("notes")
+// }
+
+model Address {
+  id         Int       @id @default(autoincrement())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  deleted_at DateTime?
+  status     Int?      @default(1)
+
+  name        String?
+  phone_one   String?
+  phone_two   String?
+  phone_three String?
+  address     String? @db.Text
+  area_id     String?
+
+  user_id Int?
+  user    User? @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("addresses")
+}
+
+model Cart {
+  id         Int       @id @default(autoincrement())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  deleted_at DateTime?
+  status     Int?      @default(1)
+
+  user_id Int?
+  user    User? @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("carts")
+}
+
+model Contact {
+  id         Int       @id @default(autoincrement())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  deleted_at DateTime?
+  status     Int?      @default(1)
+
+  name    String?
+  email   String?
+  phone   String?
+  message String? @db.Text
+
+  user_id Int?
+  user    User? @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("contacts")
+}
+
+model Coupon {
+  id         Int       @id @default(autoincrement())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  deleted_at DateTime?
+  status     Int?      @default(1)
+
+  active           DateTime?
+  coupon_code      String?
+  coupon_type      String?
+  coupon_amount    Decimal?
+  minimum_spend    Decimal?
+  maximum_spend    Decimal?
+  limit_per_coupon Int?
+  limit_per_user   Int?
+  expiry_date      DateTime?
+
+  user_id    Int?
+  user       User?        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  CouponUser CouponUser[]
+
+  @@map("coupons")
+}
+
+model CouponUser {
+  id         Int       @id @default(autoincrement())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  deleted_at DateTime?
+  status     Int?      @default(1)
+
+  coupon_id Int?
+  coupon    Coupon? @relation(fields: [coupon_id], references: [id], onDelete: Cascade)
+
+  coupon_code    String?
+  coupon_details String?
+  win_amount     Int?
+  order_id       Int?
+  order          Order?  @relation(fields: [order_id], references: [id], onDelete: Cascade)
+
+  user_id Int?
+  user    User? @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("coupon_users")
+}
+
+model CustomerCart {
+  id         Int       @id @default(autoincrement())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  deleted_at DateTime?
+  status     Int?      @default(1)
+
+  item_id Int?
+
+  buy_status         DateTime?
+  actual_weight_info String?
+  quantity_ranges    String?
+  item               String?
+  item_data          String?
+  min_quantity       Int?
+  local_delivery     Int?
+  shipped_by         String?
+  shipping_rate      Int?
+  approx_weight      Decimal?
+
+  user_id Int?
+  user    User? @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("customer_carts")
+}
+
+model Order {
+  id         Int       @id @default(autoincrement())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  deleted_at DateTime?
+  status     Int?      @default(1)
+
+  order_number        String?
+  name                String?
+  email               String?
+  phone               String?
+  amount              Decimal?
+  need_to_pay         Decimal?
+  due_for_products    Decimal?
+  shipping_rate       Decimal?
+  address             String?   @db.Text
+  pay_method          String?
+  pay_percent         Decimal?
+  pay_discount        Decimal?
+  pay_amount          Decimal?
+  order_status        String?
+  cancellation_reason String?
+  transaction_id      String?
+  ref_number          String?
+  currency            String?
+  coupon_code         String?
+  coupon_victory      Decimal?
+  order_approved_at   DateTime?
+
+  user_id    Int?
+  user       User?        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  CouponUser CouponUser[]
+  OrderItem  OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id         Int       @id @default(autoincrement())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  deleted_at DateTime?
+  status     Int?      @default(1)
+
+  order_item_number     String?
+  order_id              Int?
+  order                 Order?   @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  product_id            Int?
+  name                  String?
+  link                  String?
+  image                 String?
+  quantity_ranges       String?  @db.Text
+  shipped_by            String?
+  shipping_rate         Decimal?
+  approx_weight         Decimal?
+  china_local_delivery  Decimal?
+  order_number          String?
+  tracking_number       String?
+  actual_weight         Decimal?
+  quantity              Int?
+  product_value         Decimal?
+  first_payment         Decimal?
+  coupon_contribution   Decimal?
+  shipping_charge       Decimal?
+  discount              Decimal?
+  courier_bill          Decimal?
+  out_of_stack          Decimal?
+  out_of_stock_type     String?
+  missing               Decimal?
+  adjustment            Decimal?
+  refunded              Decimal?
+  refund_transaction_id String?
+  last_payment          Decimal?
+  due_payment           Decimal?
+  full_payment          Decimal?
+  additional_charge     Decimal?
+  invoice_number        String?
+
+  user_id Int?
+  user    User? @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("order_items")
+}
+
+model EmailSubscriber {
+  id         Int       @id @default(autoincrement())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  deleted_at DateTime?
+  status     Int?      @default(1)
+
+  email String?
+
+  user_id Int?
+  user    User? @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("email_subscribers")
+}
+
+model Invoice {
+  id         Int       @id @default(autoincrement())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  deleted_at DateTime?
+  status     Int?      @default(1)
+
+  invoice_number   String?
+  transaction_id   String?
+  customer_name    String?
+  customer_phone   String?
+  customer_address String?  @db.Text
+  total_payable    Decimal?
+  total_courier    Decimal?
+  payment_method   String?
+  delivery_method  String?
+  total_due        Decimal?
+  ref_number       String?
+
+  user_id     Int?
+  user        User?         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  InvoiceItem InvoiceItem[]
+
+  @@map("invoices")
+}
+
+model InvoiceItem {
+  id         Int       @id @default(autoincrement())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  deleted_at DateTime?
+  status     Int?      @default(1)
+
+  invoice_id        Int?
+  invoice           Invoice? @relation(fields: [invoice_id], references: [id], onDelete: Cascade)
+  order_item_id     Int?
+  order_item_number String?
+  product_id        Int?
+  product_name      String?
+  weight            Decimal?
+  total_due         Decimal?
+
+  user_id Int?
+  user    User? @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("invoice_items")
+}
+
+model Ledger {
+  id         Int       @id @default(autoincrement())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  deleted_at DateTime?
+  status     Int?      @default(1)
+
+  user_type       String?
+  recordable_type String?
+  recordable_id   Int?
+  context         Int?
+  event           String?
+  properties      String? @db.Text
+  modified        String? @db.Text
+  pivot           String? @db.Text
+  extra           String? @db.Text
+  url             String? @db.Text
+  ip_address      String?
+  user_agent      String?
+  signature       String?
+
+  user_id Int?
+  user    User? @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("ledgers")
+}
+
+model Menu {
+  id         Int       @id @default(autoincrement())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  deleted_at DateTime?
+  status     Int?      @default(1)
+
+  name          String?
+  slug          String?
+  parent_id     Int?
+  menu_group_id Int?
+
+  user_id Int?
+  user    User? @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("menus")
+}
+
+model MenuGroup {
+  id         Int       @id @default(autoincrement())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  deleted_at DateTime?
+  status     Int?      @default(1)
+
+  name        String?
+  slug        String?
+  description String?
+
+  user_id Int?
+  user    User? @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("menu_groups")
+}
+
+model Notification {
+  id         Int       @id @default(autoincrement())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  deleted_at DateTime?
+  status     Int?      @default(1)
+
+  notification_type String?
+
+  data    String?   @db.Text
+  read_at DateTime?
+
+  user_id Int?
+  user    User? @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
