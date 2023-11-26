@@ -76,24 +76,6 @@ export class AuthService extends PrismaClient {
       };
     }
 
-    // create a tenant admin (main subscriber)
-    const user = await UserRepository.createTenantAdminUser({
-      fname: fname,
-      lname: lname,
-      username: username,
-      email: email,
-      password: password,
-      role_id: 2, // tenant admin
-    });
-    if (user) {
-      // create stripe customer
-      await StripeMethod.addNewCustomer({
-        user_id: user.id,
-        name: `${user.fname} ${user.lname}`,
-        email: user.email,
-      });
-    }
-
     return {
       statusCode: 401,
       message: 'Account created successfully',
