@@ -32,25 +32,6 @@ export class UserService extends PrismaClient {
         username: true,
         email: true,
         avatar: true,
-        tenant_id: true,
-        tenant: {
-          select: {
-            id: true,
-            name: true,
-            trial_end_at: true,
-          },
-        },
-        workspace_users: {
-          select: {
-            workspace_id: true,
-            workspace: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-          },
-        },
         role_users: {
           select: {
             role: {
@@ -74,7 +55,6 @@ export class UserService extends PrismaClient {
   // invite a member
   async create(createUserDto: CreateUserDto, user_id) {
     const userDetails = await UserRepository.getUserDetails(user_id);
-    const tenant_id = userDetails.tenant_id;
     // Check if email and username is exists
     const userEmailExist = await UserRepository.exist({
       field: 'email',
@@ -107,7 +87,6 @@ export class UserService extends PrismaClient {
       username: createUserDto.username,
       email: createUserDto.email,
       role_id: createUserDto.role_id,
-      tenant_id: tenant_id,
     });
 
     if (member) {
@@ -145,26 +124,16 @@ export class UserService extends PrismaClient {
   }
 
   async findAll(userId: number) {
-    const tenant_id = await UserRepository.getTenantId(userId);
-    const user = await this.prisma.user.findMany({
-      where: {
-        tenant_id: tenant_id,
-      },
-    });
+    const user = await this.prisma.user.findMany();
     return user;
   }
 
   async findOne(id: number, userId) {
-    const tenant_id = await UserRepository.getTenantId(userId);
-
     const user = await this.prisma.user.findFirst({
       where: {
         AND: [
           {
             id: id,
-          },
-          {
-            tenant_id: tenant_id,
           },
         ],
       },
@@ -180,16 +149,12 @@ export class UserService extends PrismaClient {
   }
 
   async update(id: number, userId: number, updateUserDto: UpdateUserDto) {
-    const tenant_id = await UserRepository.getTenantId(userId);
     return this.prisma.$transaction(async () => {
       const user = await this.prisma.user.updateMany({
         where: {
           AND: [
             {
               id: id,
-            },
-            {
-              tenant_id: tenant_id,
             },
           ],
         },

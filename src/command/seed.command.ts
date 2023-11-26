@@ -26,8 +26,6 @@ export class SeedCommand extends CommandRunner {
         await this.userSeed();
         await this.roleUserSeed();
         await this.permissionRoleSeed();
-        // subscription and plan seed
-        await this.planSeed();
       });
 
       console.log('Seeding done.');
@@ -36,24 +34,6 @@ export class SeedCommand extends CommandRunner {
     }
   }
 
-  //---- subscription plan section ----
-  async planSeed() {
-    // system admin, user id: 1
-    await this.prisma.plan.createMany({
-      data: [
-        {
-          name: 'Team',
-          gateway_price_id: 'price_1MEvhxJ1sD6uaGBLDQ2DqVEK',
-          price_per_month: 99,
-        },
-        {
-          name: 'Business',
-          gateway_price_id: 'price_1MEviEJ1sD6uaGBLIbqAWP2Z',
-          price_per_month: 299,
-        },
-      ],
-    });
-  }
   //---- user section ----
   async userSeed() {
     // system admin, user id: 1
@@ -61,16 +41,6 @@ export class SeedCommand extends CommandRunner {
       username: 'admin',
       email: 'admin@example.com',
       password: '123',
-    });
-
-    // subscriber (tenant admin), user id: 2
-    await UserRepository.createTenantAdminUser({
-      fname: 'sojeb',
-      lname: 'sikder',
-      username: 'sojebsikder',
-      email: 'sojebsikder@gmail.com',
-      password: '123',
-      role_id: 2,
     });
   }
 
