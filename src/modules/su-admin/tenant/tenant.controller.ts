@@ -9,7 +9,6 @@ import {
   ConflictException,
   UseGuards,
 } from '@nestjs/common';
-import { UrlGeneratorService } from 'nestjs-url-generator';
 import { TenantService } from './tenant.service';
 import { CreateTenantDto } from './dto/create-tenant.dto';
 import { UpdateTenantDto } from './dto/update-tenant.dto';
@@ -26,7 +25,6 @@ export class TenantController {
   constructor(
     private readonly tenantService: TenantService,
     private readonly mailService: MailService,
-    private readonly urlGeneratorService: UrlGeneratorService,
   ) {}
 
   @UseGuards(JwtAuthGuard, AbilitiesGuard)
@@ -51,19 +49,7 @@ export class TenantController {
           userId: tenant.id,
           expired_at: expired_at,
         });
-        const signed_url = this.urlGeneratorService.signUrl({
-          relativePath: `user/invitation/${tenant.id}`,
-          query: {
-            token: ucode,
-            email: tenant.email,
-          },
-          expirationDate: expired_at,
-        });
-        // send email to tenant
-        await this.mailService.sendTenantInvitation({
-          user: tenant,
-          url: signed_url,
-        });
+
         return {
           message: 'Tenant created successfully',
         };

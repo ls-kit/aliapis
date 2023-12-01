@@ -12,7 +12,6 @@ import {
   Req,
 } from '@nestjs/common';
 import appConfig from '../../../config/app.config';
-import { SignedUrlGuard } from 'nestjs-url-generator';
 import { UcodeRepository } from '../../../common/repository/ucode/ucode.repository';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { UserService } from './user.service';
@@ -162,7 +161,6 @@ export class UserController {
   }
 
   @Get('invitation/:id')
-  @UseGuards(SignedUrlGuard)
   async invitation(@Req() req, @Param('id') id: number) {
     try {
       const user = await UserRepository.getUserDetails(Number(id));

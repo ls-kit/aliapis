@@ -9,7 +9,6 @@ import appConfig from './config/app.config';
 import { ThrottlerBehindProxyGuard } from './common/guard/throttler-behind-proxy.guard';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UrlGeneratorModule } from 'nestjs-url-generator';
 import { PrismaModule } from './providers/prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { AbilityModule } from './providers/ability/ability.module';
@@ -45,10 +44,6 @@ import { AppModule as AppModules } from './modules/app/app.module';
           limit: 10,
         },
       ],
-    }),
-    UrlGeneratorModule.forRoot({
-      secret: appConfig().app.key,
-      appUrl: appConfig().app.url,
     }),
     // General modules
     PrismaModule,

@@ -77,9 +77,6 @@ dependencies:
   nest-commander:
     specifier: ^3.12.2
     version: 3.12.2(@nestjs/common@10.0.0)(@nestjs/core@10.0.0)(@types/inquirer@8.2.10)(typescript@5.1.3)
-  nestjs-url-generator:
-    specifier: ^1.0.2
-    version: 1.0.2(@nestjs/common@10.0.0)(@nestjs/core@10.0.0)(reflect-metadata@0.1.13)
   nodemailer:
     specifier: ^6.9.7
     version: 6.9.7
@@ -6492,19 +6489,6 @@ packages:
       inquirer: 8.2.6
     transitivePeerDependencies:
       - typescript
-    dev: false
-
-  /nestjs-url-generator@1.0.2(@nestjs/common@10.0.0)(@nestjs/core@10.0.0)(reflect-metadata@0.1.13):
-    resolution: {integrity: sha512-YTnj7pbMzSiMtPlZ2rcEoXpyQxXxCCuEsgCS4NfbWWyi/0B52T6yMpzHvhxb6MCo85vJzLa4Pmx3b/GE4YLPZA==}
-    peerDependencies:
-      '@nestjs/common': ^9.2.0
-      '@nestjs/core': ^9.2.0
-      reflect-metadata: ^0.1.13
-    dependencies:
-      '@nestjs/common': 10.0.0(reflect-metadata@0.1.13)(rxjs@7.8.1)
-      '@nestjs/core': 10.0.0(@nestjs/common@10.0.0)(@nestjs/platform-express@10.0.0)(@nestjs/websockets@10.2.10)(reflect-metadata@0.1.13)(rxjs@7.8.1)
-      qs: 6.11.2
-      reflect-metadata: 0.1.13
     dev: false
 
   /netmask@2.0.2:

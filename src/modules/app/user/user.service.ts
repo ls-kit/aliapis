@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
-import { UrlGeneratorService } from 'nestjs-url-generator';
 import { DateHelper } from '../../../common/helper/date.helper';
 import { UcodeRepository } from '../../../common/repository/ucode/ucode.repository';
 import { MailService } from '../../../providers/mail/mail.service';
@@ -16,7 +15,6 @@ export class UserService extends PrismaClient {
   constructor(
     private prisma: PrismaService,
     private readonly mailService: MailService,
-    private readonly urlGeneratorService: UrlGeneratorService,
   ) {
     super();
   }
@@ -95,19 +93,6 @@ export class UserService extends PrismaClient {
       const ucode = await UcodeRepository.createToken({
         userId: member.id,
         expired_at: expired_at,
-      });
-      const signed_url = this.urlGeneratorService.signUrl({
-        relativePath: `user/invitation/${member.id}`,
-        query: {
-          token: ucode,
-          email: member.email,
-        },
-        expirationDate: expired_at,
-      });
-      await this.mailService.sendMemberInvitation({
-        user: userDetails,
-        member: member,
-        url: signed_url,
       });
 
       return {
