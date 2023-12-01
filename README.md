@@ -1,8 +1,6 @@
 ## Description
 
-No-code form builder backend system
-
-Frontend part: (Will be here soon)
+backend system
 
 ## Installation
 
@@ -11,6 +9,15 @@ pnpm install
 ```
 
 ## Running the app
+
+First migrate database:
+```
+npx prisma migrate dev
+```
+Then generate client:
+```
+npx prisma generate
+```
 
 ```bash
 # development
@@ -26,21 +33,10 @@ pnpm start:prod
 pnpm start:dev-swc
 ```
 
-## Running using docker
-```
-docker compose up
-```
-To rebuild app:
-```
-docker compose up --build
-```
 
 ## Used technology
 - Typescript
 - Nest.js
 - Prisma
-- Postgresql
-- Socket.io
-- Bullmq
-- Redis
+- Mysql
 - etc
