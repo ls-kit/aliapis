@@ -281,6 +281,22 @@ model CustomerCart {
   @@map("customer_carts")
 }
 
+model Category {
+  id         Int       @id @default(autoincrement())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  deleted_at DateTime?
+  status     Int?      @default(1)
+
+  parent_id   Int?
+  name        String?
+  slug        String?
+  description String?
+  picture     String?
+
+  @@map("categories")
+}
+
 model Order {
   id         Int       @id @default(autoincrement())
   created_at DateTime  @default(now())
