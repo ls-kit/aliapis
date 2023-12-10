@@ -31,6 +31,21 @@ export class ProductController {
     return products.data;
   }
 
+  @ApiOperation({ summary: 'Find All Category List' })
+  @Get('/category-list')
+  async getCategoryList() {
+    const categoryList = await this.productService.getCategoryList();
+    return categoryList.data;
+  }
+
+  @ApiOperation({ summary: 'Find Product by Category id' })
+  @Get(':categoryId')
+  async getCategoryProducts(@Param('categoryId') category: string) {
+    const categoryProduct =
+      await this.productService.getCategoryProducts(category);
+    return categoryProduct.data;
+  }
+
   @ApiOperation({ summary: 'Find one product' })
   @Get(':id')
   async findOne(@Param('id') id: string) {
