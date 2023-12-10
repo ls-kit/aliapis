@@ -41,11 +41,10 @@ export class ProductService {
 
   // find product by category id
   async getCategoryProducts(categoryId: string) {
-    console.log(categoryId);
     const products = await Fetch.get(
       `http://otapi.net/service-json/BatchSearchItemsFrame?instanceKey=${
         appConfig().otapi.instance_key
-      }&language=en&signature=&timestamp=&sessionId=&xmlParameters=%3CSearchItemsParameters%3E%3CProvider%3ETaobao%3C%2FProvider%3E%3CCategoryId%3E${categoryId}%3C%2FCategoryId%3E%3C%2FSearchItemsParameters%3E&framePosition=0&frameSize=20&blockList=AvailableSearchMethods`,
+      }&language=en&signature=&timestamp=&sessionId=&xmlParameters=%3CSearchItemsParameters%3E%3CProvider%3ETaobao%3C%2FProvider%3E%3CCategoryId%3E${categoryId}%3C%2FCategoryId%3E%3C%2FSearchItemsParameters%3E&framePosition=0&frameSize=50&blockList=AvailableSearchMethods`,
     );
 
     return products;

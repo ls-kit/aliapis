@@ -19,19 +19,6 @@ export class ProductService {
     return products;
   }
 
-
-
-
-
-  async getCategoryList() {
-    const category_List = await Fetch.get(
-     `http://otapi.net/service-json/GetRootCategoryInfoList?instanceKey=${appConfig().otapi.instance_key}&language=en&signature=&timestamp=`
-    );
-    return category_List;
-    
-  }
-
-
   findOne(id: number) {
     return `This action returns a #${id} product`;
   }
